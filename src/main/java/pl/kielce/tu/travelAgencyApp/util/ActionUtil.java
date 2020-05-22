@@ -10,10 +10,13 @@ import java.util.stream.Collectors;
 /**
  * @author ciepluchs
  */
-public class ActionUtil {
+public abstract class ActionUtil {
 
     private static final String BACK_SYMBOL = "<-";
     private static final String BACK = "back";
+
+    private ActionUtil() {
+    }
 
     public static List<Action> getAvailableActions(List<Action> actions) {
         return actions.stream()

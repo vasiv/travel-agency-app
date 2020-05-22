@@ -67,4 +67,12 @@ public class User implements Serializable, Comparable<User> {
     public String getPersonalId() {
         return personalId;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

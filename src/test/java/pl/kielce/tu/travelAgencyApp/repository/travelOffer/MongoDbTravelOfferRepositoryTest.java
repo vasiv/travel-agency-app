@@ -5,15 +5,14 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
 import pl.kielce.tu.travelAgencyApp.model.TravelOffer;
 import pl.kielce.tu.travelAgencyApp.repository.QuerySpec;
+import pl.kielce.tu.travelAgencyApp.util.PropertiesUtil;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,15 +20,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MongoDbTravelOfferRepositoryTest {
 
-    private TravelOfferRepository repository;
-    private MongoCollection travelOfferCollection;
-    private MongoDatabase db;
+    private static final String COLLECTION_PROPERTY = "store.mongodb.collection";
+    private static final String MONGODB_HOST_PROPERTY = "store.mongodb.host";
+    private static final String MONGODB_PORT_PROPERTY = "store.mongodb.port";
+    private static final String MONGODB_DATABASE_PROPERTY = "store.mongodb.database";
 
-    @BeforeEach
-    void setUp() {
-        MongoClient mongoClient = new MongoClient("hoefliger-dev.hoefliger.de", 27017);
-        db = mongoClient.getDatabase("travel-agency-app-test");
-        travelOfferCollection = db.getCollection("travelOffer");
+    private static TravelOfferRepository repository;
+    private static MongoCollection travelOfferCollection;
+    private static MongoDatabase db;
+
+    @BeforeAll
+    public static void setUp() {
+        String host = PropertiesUtil.getProperty(MONGODB_HOST_PROPERTY);
+        String port = PropertiesUtil.getProperty(MONGODB_PORT_PROPERTY);
+        MongoClient mongoClient = new MongoClient(host, Integer.valueOf(port));
+        String dbName = PropertiesUtil.getProperty(MONGODB_DATABASE_PROPERTY);
+        db = mongoClient.getDatabase(dbName);
+        db.drop();
+        db = mongoClient.getDatabase(dbName);
+        String collectionName = PropertiesUtil.getProperty(COLLECTION_PROPERTY);
+        travelOfferCollection = db.getCollection(collectionName);
         repository = new MongoDbTravelOfferRepository(db);
     }
 

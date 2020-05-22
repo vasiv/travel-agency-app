@@ -7,6 +7,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import pl.kielce.tu.travelAgencyApp.model.TravelOffer;
 import pl.kielce.tu.travelAgencyApp.repository.QuerySpec;
+import pl.kielce.tu.travelAgencyApp.util.PropertiesUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +21,14 @@ import static com.mongodb.client.model.Filters.eq;
  */
 public class MongoDbTravelOfferRepository implements TravelOfferRepository {
 
+    private static final String COLLECTION_PROPERTY = "store.mongodb.collection";
+    private static final String ID = "_id";
+    private static final String $_SET = "$set";
     MongoCollection travelOfferCollection;
 
     public MongoDbTravelOfferRepository(MongoDatabase db) {
-        this.travelOfferCollection = db.getCollection("travelOffer");
+        String collectionName = PropertiesUtil.getProperty(COLLECTION_PROPERTY);
+        this.travelOfferCollection = db.getCollection(collectionName);
     }
 
     @Override
@@ -34,7 +39,7 @@ public class MongoDbTravelOfferRepository implements TravelOfferRepository {
 
     @Override
     public Optional<TravelOffer> findById(String id) {
-        Document travelOfferDocument = (Document) travelOfferCollection.find(eq("_id", new ObjectId(id))).first();
+        Document travelOfferDocument = (Document) travelOfferCollection.find(eq(ID, new ObjectId(id))).first();
         return travelOfferDocument != null ? Optional.of(new TravelOffer(travelOfferDocument)) : Optional.empty();
     }
 
@@ -42,7 +47,7 @@ public class MongoDbTravelOfferRepository implements TravelOfferRepository {
     public TravelOffer save(TravelOffer travelOffer) {
         Document travelOfferDocument = TravelOfferMapper.parseToMongoDbDocument(travelOffer);
         travelOfferCollection.insertOne(travelOfferDocument);
-        travelOffer.setId(travelOfferDocument.getObjectId("_id").toString());
+        travelOffer.setId(travelOfferDocument.getObjectId(ID).toString());
         return travelOffer;
     }
 
@@ -60,10 +65,10 @@ public class MongoDbTravelOfferRepository implements TravelOfferRepository {
 
     @Override
     public TravelOffer update(TravelOffer travelOffer) {
-        Document query = new Document().append("_id", new ObjectId(travelOffer.getId()));
+        Document query = new Document().append(ID, new ObjectId(travelOffer.getId()));
         Document travelOfferDocument = TravelOfferMapper.parseToMongoDbDocument(travelOffer);
         Document update = new Document();
-        update.append("$set", travelOfferDocument);
+        update.append($_SET, travelOfferDocument);
         travelOfferCollection.updateOne(query, update);
         return travelOffer;
     }

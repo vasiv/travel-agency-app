@@ -9,11 +9,13 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
 import pl.kielce.tu.travelAgencyApp.model.TravelOffer;
 import pl.kielce.tu.travelAgencyApp.repository.QuerySpec;
+import pl.kielce.tu.travelAgencyApp.util.PropertiesUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,16 +26,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CouchDbTravelOfferRepositoryTest {
 
-    private static final String DB_NAME = "travel-offer";
-    private static final String DB_HOST = "http://hoefliger-dev.hoefliger.de:5984/";
-    private static final String DB_BASE_URL = DB_HOST + DB_NAME + "/";
+    private static final String DATABASE_PROPERTY = "store.couchdb.database";
+    private static final String HOST_PROPERTY = "store.couchdb.host";
+    private static final String PORT_PROPERTY = "store.couchdb.port";
+
+    private String db_base_url;
     private TravelOfferRepository repository;
 
     @BeforeEach
     void setUp() {
+        String dbName = PropertiesUtil.getProperty(DATABASE_PROPERTY);
+        String host = PropertiesUtil.getProperty(HOST_PROPERTY);
+        String port = PropertiesUtil.getProperty(PORT_PROPERTY);
+        db_base_url = host + ":" + port + "/" + dbName + "/";
         HttpClient httpClient = HttpClients.createDefault();
         repository = new CouchDbTravelOfferRepository();
-        HttpPut httpPut = new HttpPut(DB_BASE_URL);
+        HttpPut httpPut = new HttpPut(db_base_url);
         httpPut.addHeader("Content-Type", "application/json");
         try {
             httpClient.execute(httpPut, (ResponseHandler<Object>) httpResponse -> {
@@ -56,7 +64,7 @@ class CouchDbTravelOfferRepositoryTest {
     void tearDown() {
         HttpClient httpClient = HttpClients.createDefault();
         repository = new CouchDbTravelOfferRepository();
-        HttpDelete httpDelete = new HttpDelete(DB_BASE_URL);
+        HttpDelete httpDelete = new HttpDelete(db_base_url);
         httpDelete.addHeader("Content-Type", "application/json");
         try {
             httpClient.execute(httpDelete, (ResponseHandler<Object>) httpResponse -> {

@@ -35,11 +35,8 @@ public class FindTravelOffer implements Action {
         List<TravelOffer> travelOffers = repository.findBy(querySpec);
         if (travelOffers.isEmpty()){
             System.out.println("Nothing found...");
-            try {
-                System.in.read();
-            } catch (IOException e) {
-                System.err.println("Exception: " + e);
-            }
+            Scanner scanner = new Scanner(System.in);
+            scanner.nextLine();
             ViewUtil.cls();
             return;
         }

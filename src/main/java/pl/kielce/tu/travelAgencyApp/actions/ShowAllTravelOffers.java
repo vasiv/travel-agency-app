@@ -37,9 +37,7 @@ public class ShowAllTravelOffers implements Action {
             if (ViewUtil.isBackOptionSelected(selectedOption)) {
                 return;
             } else {
-                ShowTravelOffer showTravelOffer =
-                        new ShowTravelOffer(repository, allTravelOffers.get(Integer.parseInt(selectedOption) - 1));
-                showTravelOffer.execute();
+                new ShowTravelOffer(repository, allTravelOffers.get(Integer.parseInt(selectedOption) - 1)).execute();
             }
         }
     }

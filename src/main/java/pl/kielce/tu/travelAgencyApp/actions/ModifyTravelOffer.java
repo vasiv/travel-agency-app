@@ -34,6 +34,8 @@ public class ModifyTravelOffer implements Action {
         System.out.println("-".repeat(105) + "\n");
         TravelOffer modifiedTravel = getModifiedTravel(travelOffer);
         repository.update(modifiedTravel);
+        ViewUtil.cls();
+        System.out.println("Travel modified!");
     }
 
     @Override

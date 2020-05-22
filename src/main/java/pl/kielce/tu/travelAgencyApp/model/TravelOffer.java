@@ -16,13 +16,13 @@ import java.util.Objects;
 public class TravelOffer implements Jsonable {
 
     public TravelOffer(Document document) {
-        id = String.valueOf(document.getObjectId("id"));
+        id = String.valueOf(document.getObjectId("_id"));
         destinationCountry = (String) document.get("destinationCountry");
         destinationCity = (String) document.get("destinationCity");
         costPerPerson  = (double) document.get("costPerPerson");
     }
 
-    public TravelOffer(String destinationCountry, String destinationCity, float costPerPerson) {
+    public TravelOffer(String destinationCountry, String destinationCity, double costPerPerson) {
         this.destinationCountry = destinationCountry;
         this.destinationCity = destinationCity;
         this.costPerPerson = costPerPerson;

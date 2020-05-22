@@ -1,14 +1,13 @@
 package pl.kielce.tu.travelAgencyApp.repository.travelOffer;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import pl.kielce.tu.travelAgencyApp.model.TravelOffer;
+import pl.kielce.tu.travelAgencyApp.repository.QuerySpec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +49,8 @@ public class MongoDbTravelOfferRepository implements TravelOfferRepository {
     }
 
     @Override
-    public List<TravelOffer> findBy(Map<String, Object> querySpec) {
-        List<Bson> query = transformQuerySpecToBsons(querySpec);
-        MongoCursor cursor = travelOfferCollection.find(and(query)).cursor();
+        public List<TravelOffer> findBy(QuerySpec querySpec) {
+        MongoCursor cursor = travelOfferCollection.find(and(querySpec.toMongoDbQuery())).cursor();
         return transformCursorToList(cursor);
     }
 
@@ -81,12 +79,14 @@ public class MongoDbTravelOfferRepository implements TravelOfferRepository {
         }
         return travelOffers;
     }
-
-    private List<Bson> transformQuerySpecToBsons(Map<String, Object> querySpec) {
-        List<Bson> query = new ArrayList<>();
-        querySpec.forEach((key, value) -> {
-            query.add(eq(key, value));
-        });
-        return query;
-    }
+//
+//    private List<Bson> transformQuerySpecToBsons(QuerySpec querySpec) {
+//        List<Bson> query = new ArrayList<>();
+//        query.add(eq(querySpec.getDestinationCity())
+//        querySpec
+//        querySpec.forEach((key, value) -> {
+//            query.add(eq(key, value));
+//        });
+//        return query;
+//    }
 }

@@ -1,9 +1,9 @@
 package pl.kielce.tu.travelAgencyApp.repository.travelOffer;
 
 import pl.kielce.tu.travelAgencyApp.model.TravelOffer;
+import pl.kielce.tu.travelAgencyApp.repository.QuerySpec;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface TravelOfferRepository {
@@ -12,7 +12,7 @@ public interface TravelOfferRepository {
 
     Optional<TravelOffer> findById(String id);
 
-    List<TravelOffer> findBy(Map<String, Object> querySpec);
+    List<TravelOffer> findBy(QuerySpec querySpec);
 
     TravelOffer save(TravelOffer travelOffer);
 

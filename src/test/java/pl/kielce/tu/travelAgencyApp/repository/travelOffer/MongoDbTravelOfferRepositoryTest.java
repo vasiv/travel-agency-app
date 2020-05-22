@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
 import pl.kielce.tu.travelAgencyApp.model.TravelOffer;
+import pl.kielce.tu.travelAgencyApp.repository.QuerySpec;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,21 +21,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MongoDbTravelOfferRepositoryTest {
 
-    MongoClient mongoClient;
-    TravelOfferRepository repository;
-    MongoCollection travelOfferCollection;
+    private TravelOfferRepository repository;
+    private MongoCollection travelOfferCollection;
+    private MongoDatabase db;
 
     @BeforeEach
     void setUp() {
-        mongoClient = new MongoClient("", 27017);
-        MongoDatabase db = mongoClient.getDatabase("");
-        travelOfferCollection = db.getCollection("");
+        MongoClient mongoClient = new MongoClient("hoefliger-dev.hoefliger.de", 27017);
+        db = mongoClient.getDatabase("travel-agency-app-test");
+        travelOfferCollection = db.getCollection("travelOffer");
         repository = new MongoDbTravelOfferRepository(db);
     }
 
     @AfterEach
     void tearDown() {
-        travelOfferCollection.drop();
+        db.drop();
     }
 
     @Test
@@ -42,7 +43,7 @@ class MongoDbTravelOfferRepositoryTest {
         //given
         TravelOffer travelOffer = new TravelOffer("Poland", "Kielce", 1000);
         //when
-        TravelOffer savedTravelOffer = repository.save(travelOffer);
+        repository.save(travelOffer);
         //then
         assertTrue(StringUtils.isNotBlank(travelOffer.getId()));
         assertEquals(1, travelOfferCollection.countDocuments());
@@ -59,6 +60,8 @@ class MongoDbTravelOfferRepositoryTest {
         List<TravelOffer> allTravelOffers = repository.findAll();
         //then
         assertEquals(2, allTravelOffers.size());
+        assertEquals(travelOffer, allTravelOffers.get(0));
+        assertEquals(travelOffer2, allTravelOffers.get(1));
     }
 
     @Test
@@ -101,9 +104,9 @@ class MongoDbTravelOfferRepositoryTest {
         repository.save(travelOffer);
         repository.save(travelOffer2);
         repository.save(travelOffer3);
-        Map<String, Object> querySpec = new HashMap<>();
-        querySpec.put("destinationCountry", "Poland");
-        querySpec.put("costPerPerson", 1000);
+        QuerySpec querySpec = new QuerySpec();
+        querySpec.setDestinationCountry("Poland");
+        querySpec.setCostPerPersonLesserOrEqual(1000);
         //when
         List<TravelOffer> foundTravelOffer = repository.findBy(querySpec);
         //then
